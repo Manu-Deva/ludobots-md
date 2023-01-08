@@ -12,6 +12,6 @@ p.loadSDF("world.sdf")
 
 for x in range(1000):
     p.stepSimulation()
-    time.sleep(1/60)
+    time.sleep(1/30)
     print(x)
 p.disconnect()
