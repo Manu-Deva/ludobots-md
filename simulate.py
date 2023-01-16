@@ -4,6 +4,7 @@ import pybullet as p
 import pybullet_data
 import pyrosim.pyrosim as pyrosim
 import time
+import math
 
 physicsClient = p.connect(p.GUI)
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
@@ -24,6 +25,13 @@ for x in range(1000):
     backLegSensorValues[x] = pyrosim.Get_Touch_Sensor_Value_For_Link("BackLeg")
     frontLegSensorValues[x] = pyrosim.Get_Touch_Sensor_Value_For_Link(
         "FrontLeg")
+    pyrosim.Set_Motor_For_Joint(
+        bodyIndex="robot",
+        jointName="Torso_BackLeg",
+        controlMode=p.POSITION_CONTROL,
+        targetPosition=0.0,
+        maxForce=500
+    )
 
 p.disconnect()
 print(backLegSensorValues)
