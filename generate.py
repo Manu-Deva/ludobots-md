@@ -11,14 +11,7 @@ n = 0
 # [z,x,y]
 
 
-def Create_World():
-    pyrosim.Start_SDF("world.sdf")
-    pyrosim.Send_Cube(
-        name="Box", pos=[-10, -5, 1], size=[length, width, height])
-    pyrosim.End()
-
-
-def Create_Robot():
+def Generate_Body():
     pyrosim.Start_URDF("body.urdf")
     pyrosim.Send_Cube(name="Torso", pos=[x, y, z], size=[
         length, width, height])
@@ -38,8 +31,19 @@ def Create_Robot():
     pyrosim.End()
 
 
-Create_World()
-Create_Robot()
+def Generate_Brain():
+    pyrosim.Start_NeuralNetwork("brain.nndf")
+    pyrosim.Send_Sensor_Neuron(name=0, linkName="Torso")
+    pyrosim.Send_Sensor_Neuron(name=1, linkName="BackLeg")
+    pyrosim.Send_Sensor_Neuron(name=2, linkName="FrontLeg")
+    pyrosim.Send_Motor_Neuron(name=3, jointName="Torso_BackLeg")
+    pyrosim.Send_Motor_Neuron(name=4, jointName="Torso_FrontLeg")
+    pyrosim.End()
+
+
+Generate_Body()
+
+Generate_Brain()
 
 
 # green line x

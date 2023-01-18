@@ -6,6 +6,7 @@ import pyrosim.pyrosim as pyrosim
 import time
 import math
 import random
+from pyrosim.neuralNetwork import NEURAL_NETWORK
 from sensor import SENSOR
 from motor import MOTOR
 
@@ -17,6 +18,7 @@ class ROBOT:
         pyrosim.Prepare_To_Simulate(self.robotId)
         self.Prepare_to_Sense()
         self.Prepare_to_Act()
+        self.nn = NEURAL_NETWORK("brain.nndf")
 
     def Prepare_to_Sense(self):
         self.sensors = {}
@@ -33,5 +35,16 @@ class ROBOT:
             self.motors[jointName] = MOTOR(jointName)
 
     def Act(self, t):
-        for motor in self.motors:
-            self.motors[motor].Set_Value(self.robotId, t)
+        for neuronName in self.nn.Get_Neuron_Names():
+            if self.nn.Is_Motor_Neuron(neuronName):
+                jointName = self.nn.Get_Motor_Neurons_Joint(neuronName)
+                desiredAngle = self.nn.Get_Value_Of(neuronName)
+                self.motors[jointName].Set_Value(self.robotId, desiredAngle)
+                print(neuronName, jointName, desiredAngle)
+
+        # for motor in self.motors:
+            # self.motors[motor].Set_Value(self.robotId, desiredAngle)
+
+    def Think(self):
+        self.nn.Update()
+        self.nn.Print()
