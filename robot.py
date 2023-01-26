@@ -13,11 +13,11 @@ from motor import MOTOR
 
 class ROBOT:
     def __init__(self):
-        # self.motors = {}
+        self.motors = {}
         self.robotId = p.loadURDF("body.urdf")
         pyrosim.Prepare_To_Simulate(self.robotId)
         self.Prepare_to_Sense()
-        # self.Prepare_to_Act()
+        self.Prepare_to_Act()
         self.nn = NEURAL_NETWORK("brain.nndf")
 
     def Prepare_to_Sense(self):
@@ -29,10 +29,10 @@ class ROBOT:
         for sensor in self.sensors:
             self.sensors[sensor].Get_Value(t)
 
-    # def Prepare_to_Act(self):
-    #     self.motors = {}
-    #     for jointName in pyrosim.jointNamesToIndices:
-    #         self.motors[jointName] = MOTOR(jointName)
+    def Prepare_to_Act(self):
+        self.motors = {}
+        for jointName in pyrosim.jointNamesToIndices:
+            self.motors[jointName] = MOTOR(jointName)
 
     def Act(self, t):
         for neuronName in self.nn.Get_Neuron_Names():
