@@ -12,8 +12,12 @@ from robot import ROBOT
 
 
 class SIMULATION:
-    def __init__(self):
-
+    def __init__(self, directOrGUI):
+        self.directOrGUI = directOrGUI
+        if (self.directOrGUI == "DIRECT"):
+            self.physicsClient = p.connect(p.DIRECT)
+        else:
+            self.physicsClient = p.connect(p.GUI)
         self.world = WORLD()
         self.robot = ROBOT()
 
@@ -29,18 +33,20 @@ class SIMULATION:
     def __del__(self):
         p.disconnect()
 
+    def Get_Fitness(self):
+        self.robot.Get_Fitness()
 
-# pyrosim.Set_Motor_For_Joint(
-#     bodyIndex=robotId,
-#     jointName='Torso_BackLeg',
-#     controlMode=p.POSITION_CONTROL,
-#     targetPosition=backTargetAngles[x],
-#     maxForce=c.force
-# )
-# pyrosim.Set_Motor_For_Joint(
-#     bodyIndex=robotId,
-#     jointName='Torso_FrontLeg',
-#     controlMode=p.POSITION_CONTROL,
-#     targetPosition=frontTargetAngles[x],
-#     maxForce=c.force
-# )
+        # pyrosim.Set_Motor_For_Joint(
+        #     bodyIndex=robotId,
+        #     jointName='Torso_BackLeg',
+        #     controlMode=p.POSITION_CONTROL,
+        #     targetPosition=backTargetAngles[x],
+        #     maxForce=c.force
+        # )
+        # pyrosim.Set_Motor_For_Joint(
+        #     bodyIndex=robotId,
+        #     jointName='Torso_FrontLeg',
+        #     controlMode=p.POSITION_CONTROL,
+        #     targetPosition=frontTargetAngles[x],
+        #     maxForce=c.force
+        # )
