@@ -13,7 +13,6 @@ class SOLUTION:
         self.numMotors = self.numLinks - 1
         self.joints = list(range(self.numMotors))
 
-        # self.numSensors = random.randint(0, 1)
         self.sensors = list(range(self.numLinks))
 
         self.counter = 0
@@ -52,11 +51,6 @@ class SOLUTION:
         pyrosim.Start_URDF("body.urdf")
         print(self.numLinks)
         for i in range(self.numLinks-1):
-
-            # linkName = "Link" + str(i)
-            # nextLinkName = "Link" + str(i+1)
-            # currJointName = "Link" + str(i) + "_" + "Link" + str(i+1)
-            # print(linkName, nextLinkName)
 
             linkName = "Link" + str(i)
             print(linkName)
@@ -97,53 +91,9 @@ class SOLUTION:
         self.joints = self.joints[:-1]
         print(self.joints)
 
-        # pyrosim.Send_Cube(name="Torso", pos=[0, 0, 1.5], size=[
-        #     1, 1, 1])
-
-        # pyrosim.Send_Joint(name="Torso_BackLeg", parent="Torso",
-        #                    child="BackLeg", type="revolute", position=[0.5, 0, 1])
-
-        # pyrosim.Send_Cube(
-        #     name="BackLeg", pos=[0.5, 0, -0.5], size=[1, 1, 1])
-
-        # pyrosim.Send_Joint(name="Torso_FrontLeg", parent="Torso",
-        #                    child="FrontLeg", type="revolute", position=[-0.5, 0, 1])
-
-        # pyrosim.Send_Cube(
-        #     name="FrontLeg", pos=[-0.5, 0, -0.5], size=[1, 1, 1])
-
-        # pyrosim.Send_Cube(name="Link1", pos=[
-        #                   0, 0, 0.5], size=self.Create_Random_Size())
-
-        # pyrosim.Send_Joint(name="Link1_Link2", parent="Link1",
-        #                    child="Link2", type="revolute", position=[0.5, 0, 0.5])
-        # pyrosim.Send_Cube(name="Link2", pos=[
-        #                   0.5, 0, 0], size=self.Create_Random_Size())
-
-        # pyrosim.Send_Joint(name="Link2_Link3", parent="Link2",
-        #                    child="Link3", type="revolute", position=[1, 0, 0])
-        # pyrosim.Send_Cube(name="Link3", pos=[
-        #                   0.5, 0, 0], size=self.Create_Random_Size())
-
-        # pyrosim.Send_Joint(name="Link3_Link4", parent="Link3",
-        #                    child="Link4", type="revolute", position=[1, 0, 0])
-        # pyrosim.Send_Cube(name="Link4",
-        #                   pos=[0.5, 0, 0], size=self.Create_Random_Size())
-
-        # pyrosim.Send_Joint(name="Link4_Link5", parent="Link4",
-        #                    child="Link5", type="revolute", position=[1, 0, 0])
-        # pyrosim.Send_Cube(name="Link5", pos=[
-        #                   0.5, 0, 0], size=self.Create_Random_Size())
-
         pyrosim.End()
 
     def Create_Brain(self):
-        # pyrosim.Start_NeuralNetwork("brain" + str(self.myID) + ".nndf")
-        # pyrosim.Send_Sensor_Neuron(name=0, linkName="Torso")
-        # pyrosim.Send_Sensor_Neuron(name=1, linkName="BackLeg")
-        # pyrosim.Send_Sensor_Neuron(name=2, linkName="FrontLeg")
-        # pyrosim.Send_Motor_Neuron(name=3, jointName="Torso_BackLeg")
-        # pyrosim.Send_Motor_Neuron(name=4, jointName="Torso_FrontLeg")
 
         pyrosim.Start_NeuralNetwork("brain" + str(self.myID) + ".nndf")
         for i in range(0, len(self.sensors)):
@@ -158,7 +108,6 @@ class SOLUTION:
 
         for currentRow in range(len(self.sensors)):
             if self.sensors[currentRow] == "Link" + str(currentRow):
-                # currentRow = i
                 for currentColumn in range(self.numMotors):
                     pyrosim.Send_Synapse(currentRow, currentColumn +
                                          len(self.sensors)-1, 1)

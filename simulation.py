@@ -26,10 +26,6 @@ class SIMULATION:
             p.stepSimulation()
             if (self.directOrGUI == "GUI"):
                 time.sleep(1/60)
-                # p.stepSimulation()
-                # self.robot.Sense(t)
-                # self.robot.Think()
-                # self.robot.Act(t)
             self.robot.Sense(t)
             self.robot.Think()
             self.robot.Act(t)
@@ -39,18 +35,3 @@ class SIMULATION:
 
     def Get_Fitness(self):
         self.robot.Get_Fitness()
-
-        # pyrosim.Set_Motor_For_Joint(
-        #     bodyIndex=robotId,
-        #     jointName='Torso_BackLeg',
-        #     controlMode=p.POSITION_CONTROL,
-        #     targetPosition=backTargetAngles[x],
-        #     maxForce=c.force
-        # )
-        # pyrosim.Set_Motor_For_Joint(
-        #     bodyIndex=robotId,
-        #     jointName='Torso_FrontLeg',
-        #     controlMode=p.POSITION_CONTROL,
-        #     targetPosition=frontTargetAngles[x],
-        #     maxForce=c.force
-        # )

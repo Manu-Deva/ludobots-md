@@ -30,9 +30,6 @@ class PARALLEL_HILL_CLIMBER:
         self.Select()
 
     def Spawn(self):
-        # self.child = copy.deepcopy(self.parent)
-        # self.child.Set_ID()
-        # self.nextAvailableID += 1
         self.children = {}
         for i in range(len(self.parents)):
             self.children[i] = copy.deepcopy(self.parents[i])
@@ -40,8 +37,6 @@ class PARALLEL_HILL_CLIMBER:
             self.nextAvailableID += 1
 
     def Select(self):
-        # if (self.parent.fitness < self.child.fitness):
-        #     self.parent = self.child
         for i in self.parents.keys():
             if self.parents[i].fitness > self.children[i].fitness:
                 self.parents[i] = self.children[i]
