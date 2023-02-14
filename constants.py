@@ -13,4 +13,6 @@ LegFrequency = 200
 LegPhaseOffset = 2*np.pi
 
 force = 50
-numberOfGenerations = 10
+numberOfGenerations = 1
+
+populationSize = 1
