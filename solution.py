@@ -8,23 +8,31 @@ import time
 class SOLUTION:
     def __init__(self, nextAvailableID) -> None:
         self.myID = nextAvailableID
-        self.numLinks = random.randint(5, 15)
+        self.numLinks = random.randint(2, 8)
+
         self.numMotors = self.numLinks - 1
+        self.joints = list(range(self.numMotors))
+
         # self.numSensors = random.randint(0, 1)
         self.sensors = list(range(self.numLinks))
+
+        self.counter = 0
         for i in range(len(self.sensors)):
             self.sensors[i] = random.randint(0, 1)
-        self.links_with_sensors = list(range(20))
-        self.joints = list(range(self.numLinks))
+            if self.sensors[i] == 1:
+                self.counter += 1
+
+        self.links_with_sensors = list(range(self.counter))
+
         self.weights = (np.random.rand(
-            len(self.sensors), self.numMotors)*2) - 1
+            len(self.links_with_sensors)-1, self.numMotors-2)*2) - 1
 
     def Evaluate(self, directOrGUI):
         self.Create_Body()
         self.Create_Brain()
         self.Create_World()
         os.system("start /B python simulate.py " +
-                  directOrGUI + " " + str(self.myID))
+                  "GUI" + " " + str(self.myID))
         fitnessFileName = "fitness" + str(self.myID) + ".txt"
         while not os.path.exists(fitnessFileName):
             time.sleep(0.01)
@@ -42,26 +50,32 @@ class SOLUTION:
 
     def Create_Body(self):
         pyrosim.Start_URDF("body.urdf")
+        print(self.numLinks)
         for i in range(self.numLinks-1):
+
+            # linkName = "Link" + str(i)
+            # nextLinkName = "Link" + str(i+1)
+            # currJointName = "Link" + str(i) + "_" + "Link" + str(i+1)
+            # print(linkName, nextLinkName)
 
             linkName = "Link" + str(i)
             print(linkName)
-
-        if (i < self.numLinks-2):
+            nextLinkName = "Link" + str(i+1)
+            currJointName = "Link" + str(i) + "_" + "Link" + str(i+1)
             if (i == 0):
                 if self.sensors[i] == 0:
                     pyrosim.Send_Cube(name=linkName, pos=[
                         0, 0, 0.5], size=self.Create_Random_Size(), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
 
-                pyrosim.Send_Joint(name="Link" + str(i) + "_" + "Link" + str(i+1), parent=linkName,
-                                   child="Link" + str(i+1), type="revolute", position=[0.5, 0, 0.5])
-                self.joints[i] = "Link" + \
-                    str(i) + "_" + "Link" + str(i+1)
-
                 if self.sensors[i] == 1:
                     pyrosim.Send_Cube(name=linkName, pos=[
                         0, 0, 0.5], size=self.Create_Random_Size(), colorString='    <color rgba="0.0 1.0 0.0 1.0"/>', colorName='Green')
-                    self.links_with_sensors[i] = linkName
+                    self.sensors[i] = linkName
+
+                if (i < self.numLinks-2):
+                    pyrosim.Send_Joint(name=currJointName, parent=linkName,
+                                       child=nextLinkName, type="revolute", position=[0.5, 0, 0.5])
+                    self.joints[i] = currJointName
 
             else:
 
@@ -69,23 +83,19 @@ class SOLUTION:
                     pyrosim.Send_Cube(name=linkName, pos=[
                         0.5, 0, 0], size=self.Create_Random_Size(), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
 
-                currJointName = "Link" + str(i) + "_" + "Link" + str(i+1)
-                self.joints[i] = currJointName
-                pyrosim.Send_Joint(name=currJointName, parent=linkName,
-                                   child="Link" + str(i+1), type="revolute", position=[1, 0, 0])
-
                 if self.sensors[i] == 1:
                     pyrosim.Send_Cube(name=linkName, pos=[
                         0.5, 0, 0], size=self.Create_Random_Size(), colorString='    <color rgba="0.0 1.0 0.0 1.0"/>', colorName='Green')
-                    self.links_with_sensors[i] = linkName
+                    self.sensors[i] = linkName
 
-            print(self.joints)
-            # print(currJointName)
+                if (i < self.numLinks-2):
+                    pyrosim.Send_Joint(name=currJointName, parent=linkName,
+                                       child=nextLinkName, type="revolute", position=[1, 0, 0])
+                    self.joints[i] = currJointName
 
-            # print(self.joints)
+        print(self.joints)
         self.joints = self.joints[:-1]
-        self.joints = self.joints[:-1]
-        # print(self.joints)
+        print(self.joints)
 
         # pyrosim.Send_Cube(name="Torso", pos=[0, 0, 1.5], size=[
         #     1, 1, 1])
@@ -136,28 +146,22 @@ class SOLUTION:
         # pyrosim.Send_Motor_Neuron(name=4, jointName="Torso_FrontLeg")
 
         pyrosim.Start_NeuralNetwork("brain" + str(self.myID) + ".nndf")
-        for i in range(len(self.links_with_sensors)):
-            if (self.links_with_sensors[i] == "Link" + str(i)):
+        for i in range(0, len(self.sensors)):
+            if self.sensors[i] == "Link" + str(i):
                 pyrosim.Send_Sensor_Neuron(
-                    name=i, linkName=str(self.links_with_sensors[i]))
-        for i in range(self.numMotors-1):
-            pyrosim.Send_Motor_Neuron(
-                name=self.numLinks+i, jointName=str(self.joints[i]))
+                    name=i, linkName=str(self.sensors[i]))
 
-        # pyrosim.Send_Sensor_Neuron(name=0, linkName="Link1")
-        # pyrosim.Send_Sensor_Neuron(name=1, linkName="Link2")
-        # pyrosim.Send_Sensor_Neuron(name=2, linkName="Link3")
-        # pyrosim.Send_Sensor_Neuron(name=3, linkName="Link4")
-        # pyrosim.Send_Sensor_Neuron(name=4, linkName="Link5")
+        for i in range(0, self.numMotors-1):
+            if i < len(self.joints):
+                pyrosim.Send_Motor_Neuron(
+                    name=self.numLinks+i, jointName=str(self.joints[i]))
 
-        # pyrosim.Send_Motor_Neuron(name=5, jointName="Link1_Link2")
-        # pyrosim.Send_Motor_Neuron(name=6, jointName="Link2_Link3")
-        # pyrosim.Send_Motor_Neuron(name=7, jointName="Link3_Link4")
-        # pyrosim.Send_Motor_Neuron(name=8, jointName="Link4_Link5")
         for currentRow in range(len(self.sensors)):
-            for currentColumn in range(self.numMotors):
-                pyrosim.Send_Synapse(currentRow, currentColumn +
-                                     len(self.sensors), 1)
+            if self.sensors[currentRow] == "Link" + str(currentRow):
+                # currentRow = i
+                for currentColumn in range(self.numMotors):
+                    pyrosim.Send_Synapse(currentRow, currentColumn +
+                                         len(self.sensors)-1, 1)
         pyrosim.End()
 
     def Mutate(self):
@@ -170,7 +174,7 @@ class SOLUTION:
         self.Create_Body()
         self.Create_Brain()
         os.system("start /B python simulate.py " +
-                  directOrGUI + " " + str(self.myID))
+                  "GUI" + " " + str(1))
 
     def Wait_For_Simulation_To_End(self):
         fitnessFileName = "fitness" + str(self.myID) + ".txt"

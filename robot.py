@@ -21,7 +21,7 @@ class ROBOT:
         self.Prepare_to_Act()
         self.solutionID = solutionID
         self.nn = NEURAL_NETWORK("brain" + solutionID + ".nndf")
-        os.system("del brain" + solutionID + ".nndf")
+        # os.system("del brain" + solutionID + ".nndf")
 
     def Prepare_to_Sense(self):
         self.sensors = {}

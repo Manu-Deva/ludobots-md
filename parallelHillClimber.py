@@ -1,10 +1,13 @@
 from solution import SOLUTION
 import constants as c
 import copy
+import os
 
 
 class PARALLEL_HILL_CLIMBER:
     def __init__(self):
+        # os.system("del brain1.nndf")
+        # os.system("del fitness*.txt")
         self.parents = {}
         self.nextAvailableID = 0
         for x in range(0, c.populationSize):
