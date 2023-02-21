@@ -7,32 +7,34 @@ import time
 
 class LINK:
     def __init__(self):
-        self.numLinks = random.randint(5, 10)
-        self.connectLinks = {}
-        for i in range(self.numLinks-1):
-            self.connectLinks["Link" + str(i)] = self.Create_Random_Size()
+        self.d = random.randint(1, 6)
+        self.c = random.randint(0, 1)
+        self.x = random.randint(8, 15)
 
-        self.connectLinksKeys = list(self.connectLinks.keys())
+        self.links = {}
+        for i in range(0, self.x):
+            self.links["Link" + str(i)] = self.Create_Random_Size()
+        self.linkNames = list(self.links.keys())
+        self.selectedLinks = [None] * len(self.links)
+        self.linkPositions = {}
+        self.selectedJoints = [None] * len(self.links)
 
+    def Create_Random_Size(self):
+        return [random.uniform(0.5, 1.5), random.uniform(1.0, 1.5), random.uniform(1.0, 1.5)]
 
-randLegs = random.randint(3, 6)
-randLinks = random.randint(3, 7)
-linkNames = {}
-for i in range(0, randLegs):
-    linkNames["Leg" + str(i)] = i
-for i in range(len(linkNames)):
-    linkNames["Leg" + str(i)] = {}
-    for j in range(0, randLinks):
-        linkNames["Leg" + str(i)]["Link" + str(j)] = self.Create_Random_Size()
+    def Connect_Links(self):
+        for i in range(len(self.linkNames)):
+            z = random.randint(0, i)
+            if (i == len(self.linkNames) - 1):
+                initiaLink = self.linkNames[z]
+                self.selectedLinks[i] = initiaLink
+                break
+            initialLink = self.linkNames[z]
+            self.selectedLinks[i] = initialLink
+            if (i == 0):
+                self.linkPositions[initialLink] = [0, 0, 0.5]
+            currLink = self.linkNames[i+1]
+            self.selectedLinks[i+1] = currLink
 
-
-self.linkNames = [None] * self.randLegs
-for i in range(self.linkNames.size()):
-    self.linkNames[i] = self.temp
-for i in range(len(linkNames)):
-    linkNames[i] =
-for j in range(self.randLegs)
-self.randLeg1 = random.randint(3, 7)
-self.randLeg1 = random.randint(3, 7)
-self.randLeg1 = random.randint(3, 7)
-self.randLeg1 = random.randint(3, 7)
+            randomJointName = initialLink + "_" + currLink
+            self.selectedJoints[i] = randomJointName
