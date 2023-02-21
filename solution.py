@@ -6,14 +6,33 @@ import time
 
 
 class SOLUTION:
+
     def __init__(self, nextAvailableID) -> None:
         self.myID = nextAvailableID
-        self.numLinks = random.randint(2, 8)
+        self.numLinks = random.randint(5, 10)
+        self.randomLink = random.randint(1, self.numLinks - 3)
+        self.connectLinks = {}
+        for i in range(self.numLinks-1):
+            self.connectLinks["Link" + str(i)] = self.Create_Random_Size()
+        self.connectLinksKeys = list(self.connectLinks.keys())
 
-        self.numMotors = self.numLinks - 1
+        self.randLegs = random.randint(3, 6)
+        self.randLinks = random.randint(3, 7)
+        self.linkNames = {}
+        self.count = 0
+        for i in range(0, self.randLegs):
+            self.linkNames["Leg" + str(i)] = i
+        for i in range(len(self.linkNames)):
+            self.linkNames["Leg" + str(i)] = {}
+            for j in range(0, self.randLinks):
+                self.count += 1
+                self.linkNames["Leg" + str(i)]["Link" +
+                                               str(self.count)] = self.Create_Random_Size()
+
+        self.numMotors = self.randLinks - 1
         self.joints = list(range(self.numMotors))
 
-        self.sensors = list(range(self.numLinks))
+        self.sensors = list(range(self.randLinks))
 
         self.counter = 0
         for i in range(len(self.sensors)):
@@ -45,46 +64,149 @@ class SOLUTION:
         pyrosim.End()
 
     def Create_Random_Size(self):
-        return [random.random()+0.5, random.random(), random.random()+0.10]
+        return [random.uniform(0.5, 1.5), random.uniform(1.0, 1.5), random.uniform(1.0, 1.5)]
 
     def Create_Body(self):
         pyrosim.Start_URDF("body.urdf")
         print(self.numLinks)
-        for i in range(self.numLinks-1):
-
-            linkName = "Link" + str(i)
-            print(linkName)
-            nextLinkName = "Link" + str(i+1)
-            currJointName = "Link" + str(i) + "_" + "Link" + str(i+1)
+        link_size = [1, 1, 1]
+        for i in range(0, self.randLegs+1):
+            currLink = "Link" + str(i)
+            nextLink = "Link" + str(i+1)
+            currJointName = currLink + "_" + nextLink
+            direction = random.randint(1, 6)
             if (i == 0):
                 if self.sensors[i] == 0:
-                    pyrosim.Send_Cube(name=linkName, pos=[
-                        0, 0, 0.5], size=self.Create_Random_Size(), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
+                    pyrosim.Send_Cube(name=currLink, pos=[
+                        2.5, 0, 2.5], size=link_size, colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
 
                 if self.sensors[i] == 1:
-                    pyrosim.Send_Cube(name=linkName, pos=[
-                        0, 0, 0.5], size=self.Create_Random_Size(), colorString='    <color rgba="0.0 1.0 0.0 1.0"/>', colorName='Green')
-                    self.sensors[i] = linkName
+                    pyrosim.Send_Cube(name=currLink, pos=[
+                        2.5, 0, 2.5], size=link_size, colorString='    <color rgba="0.0 1.0 0.0 1.0"/>', colorName='Green')
 
-                if (i < self.numLinks-2):
-                    pyrosim.Send_Joint(name=currJointName, parent=linkName,
-                                       child=nextLinkName, type="revolute", position=[0.5, 0, 0.5])
-                    self.joints[i] = currJointName
+                if direction == 1:
+                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
+                                       child=nextLink, type="revolute", position=[3.0, 0, 2.5])  # x
+                if direction == 2:
+                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
+                                       child=nextLink, type="revolute", position=[2.5, 0.5, 2.5])  # y
+                if direction == 3:
+                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
+                                       child=nextLink, type="revolute", position=[2.5, 0, 3.0])  # z
+                if direction == 4:
+                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
+                                       child=nextLink, type="revolute", position=[2.0, 0, 2.5])  # -x
+                if direction == 5:
+                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
+                                       child=nextLink, type="revolute", position=[2.5, -0.5, 2.5])  # -y
+                if direction == 6:
+                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
+                                       child=nextLink, type="revolute", position=[2.5, 0, 2.0])  # -z
 
             else:
-
+                if
+                currLeg = "Leg"+str(i-1)
+                currLink = (i-1)+1
+                nextLink = (i-1)+2
+                moreNextLink = (i-1)+3
                 if self.sensors[i] == 0:
-                    pyrosim.Send_Cube(name=linkName, pos=[
-                        0.5, 0, 0], size=self.Create_Random_Size(), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
+                    incrementer = 0
+                    if direction == 1:
+
+                        if (incrementer != 3):
+                            pyrosim.Send_Cube(name=currLink, pos=[self.linkNames[currLeg].get(currLink)[0]/2, 0, 0
+                                                                  ], size=self.linkNames[currLeg].get(currLink), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
+                            pyrosim.Send_Joint(name=currJointName, parent=currLink, child=nextLink, type="revolute", position=[
+                                self.linkNames[currLeg].get(currLink)[0], 0, 0])
+                            pyrosim.Send_Cube(name=nextLink, pos=[self.linkNames[currLeg].get(nextLink)[0]/2, 0, 0
+                                                                  ], size=self.linkNames[currLeg].get(currLink), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
+                            incrementer += 4
+                        if (incrementer == 4):
+                            pyrosim.Send_Joint(name=currJointName, parent=currLink, child=nextLink, type="revolute", position=[
+                                self.linkNames[currLeg].get(currLink)[0]/2, 0, -self.linkNames[currLeg].get(currLink)[2]/2])
+                            incrementer += 1
+                        if (incrementer < 4):
+                            pyrosim.Send_Cube(name=currLink, pos=[0, 0, -self.linkNames[currLeg].get(currLink)[2]/2
+                                                                  ], size=self.linkNames[currLeg].get(currLink), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
+                            if (j != self.randLinks):
+                                pyrosim.Send_Joint(name=currJointName, parent=currLink, child=nextLink, type="revolute", position=[
+                                    self.linkNames[currLeg].get(currLink)[0]/2, 0, -self.linkNames[currLeg].get(currLink)[2]/2])
+
+                    if direction == 2:
+                        for j in range(0, self.randLinks):
+                            pyrosim.Send_Cube(name=currLink, pos=[0, self.linkNames[currLeg].get(currLink)[0]/2, 0
+                                                                  ], size=self.linkNames[currLeg].get(currLink), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
+                            pyrosim.Send_Joint(name=currJointName, parent=currLink, child=nextLink, type="revolute", position=[
+                                               0, self.linkNames[currLeg].get(currLink)[0], 0])
+
+                    if direction == 4:
+                        for j in range(0, self.randLinks):
+                            pyrosim.Send_Cube(name=currLink, pos=[-self.linkNames[currLeg].get(currLink)[0]/2, 0, 0
+                                                                  ], size=self.linkNames[currLeg].get(currLink), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
+                            pyrosim.Send_Joint(name=currJointName, parent=currLink, child=nextLink, type="revolute", position=[
+                                               -self.linkNames[currLeg].get(currLink)[0], 0, 0])
+
+                    if direction == 5:
+                        for j in range(0, self.randLinks):
+                            pyrosim.Send_Cube(name=currLink, pos=[0, -self.linkNames[currLeg].get(currLink)[0]/2, 0
+                                                                  ], size=self.linkNames[currLeg].get(currLink), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
+                            pyrosim.Send_Joint(name=currJointName, parent=currLink, child=nextLink, type="revolute", position=[
+                                               0, -self.linkNames[currLeg].get(currLink)[0], 0])
+
+                    if direction == 5:
+                        for j in range(0, self.randLinks):
+                            pyrosim.Send_Cube(name=currLink, pos=[self.linkNames[currLeg].get(currLink)[0]/2, 0, 0
+                                                                  ], size=self.linkNames[currLeg].get(currLink), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
+                            pyrosim.Send_Joint(name=currJointName, parent=currLink, child=nextLink, type="revolute", position=[
+                                               self.linkNames[currLeg].get(currLink)[0], 0, 0])
+
+                    if direction == 6:
+                        for j in range(0, self.randLinks):
+                            pyrosim.Send_Cube(name=currLink, pos=[self.linkNames[currLeg].get(currLink)[0]/2, 0, 0
+                                                                  ], size=self.linkNames[currLeg].get(currLink), colorString='    <color rgba="0.0 0.0 1.0 1.0"/>', colorName='Blue')
+                            pyrosim.Send_Joint(name=currJointName, parent=currLink, child=nextLink, type="revolute", position=[
+                                               self.linkNames[currLeg].get(currLink)[0], 0, 0])
 
                 if self.sensors[i] == 1:
-                    pyrosim.Send_Cube(name=linkName, pos=[
-                        0.5, 0, 0], size=self.Create_Random_Size(), colorString='    <color rgba="0.0 1.0 0.0 1.0"/>', colorName='Green')
+                    if direction == 1:
+                        pyrosim.Send_Cube(name=self.connectLinksKeys[i], pos=[
+                            self.connectLinks[self.connectLinksKeys[i]][0]/2, 0, 0], size=self.connectLinks[self.connectLinksKeys[i]], colorString='    <color rgba="0.0 1.0 0.0 1.0"/>', colorName='Green')
+                    if direction == 2:
+                        pyrosim.Send_Cube(name=self.connectLinksKeys[i], pos=[
+                            0, self.connectLinks[self.connectLinksKeys[i]][1]/2, 0], size=self.connectLinks[self.connectLinksKeys[i]], colorString='    <color rgba="0.0 1.0 0.0 1.0"/>', colorName='Green')
+                    if direction == 3:
+                        pyrosim.Send_Cube(name=self.connectLinksKeys[i], pos=[
+                            0, 0, self.connectLinks[self.connectLinksKeys[i]][2]/2], size=self.connectLinks[self.connectLinksKeys[i]], colorString='    <color rgba="0.0 1.0 0.0 1.0"/>', colorName='Green')
+                    if direction == 4:
+                        pyrosim.Send_Cube(name=self.connectLinksKeys[i], pos=[
+                            -self.connectLinks[self.connectLinksKeys[i]][0]/2, 0, 0], size=self.connectLinks[self.connectLinksKeys[i]], colorString='    <color rgba="0.0 1.0 0.0 1.0"/>', colorName='Green')
+                    if direction == 5:
+                        pyrosim.Send_Cube(name=self.connectLinksKeys[i], pos=[
+                            0, -self.connectLinks[self.connectLinksKeys[i]][1]/2, 0], size=self.connectLinks[self.connectLinksKeys[i]], colorString='    <color rgba="0.0 1.0 0.0 1.0"/>', colorName='Green')
+                    if direction == 6:
+                        pyrosim.Send_Cube(name=self.connectLinksKeys[i], pos=[
+                            0, 0, -self.connectLinks[self.connectLinksKeys[i]][2]/2], size=self.connectLinks[self.connectLinksKeys[i]], colorString='    <color rgba="0.0 1.0 0.0 1.0"/>', colorName='Green')
                     self.sensors[i] = linkName
 
                 if (i < self.numLinks-2):
-                    pyrosim.Send_Joint(name=currJointName, parent=linkName,
-                                       child=nextLinkName, type="revolute", position=[1, 0, 0])
+                    if direction == 1:
+                        pyrosim.Send_Joint(name=currJointName, parent=linkName,
+                                           child=nextLinkName, type="revolute", position=[self.connectLinks[self.connectLinksKeys[i+1]][0], 0, 0])
+                    if direction == 2:
+                        pyrosim.Send_Joint(name=currJointName, parent=linkName,
+                                           child=nextLinkName, type="revolute", position=[0, self.connectLinks[self.connectLinksKeys[i+1]][1], 0])
+                    if direction == 3:
+                        pyrosim.Send_Joint(name=currJointName, parent=linkName,
+                                           child=nextLinkName, type="revolute", position=[0, 0, self.connectLinks[self.connectLinksKeys[i+1]][2]])
+                    if direction == 4:
+                        pyrosim.Send_Joint(name=currJointName, parent=linkName,
+                                           child=nextLinkName, type="revolute", position=[-self.connectLinks[self.connectLinksKeys[i+1]][0], 0, 0])
+                    if direction == 5:
+                        pyrosim.Send_Joint(name=currJointName, parent=linkName,
+                                           child=nextLinkName, type="revolute", position=[0, -self.connectLinks[self.connectLinksKeys[i+1]][1], 0])
+                    if direction == 6:
+                        pyrosim.Send_Joint(name=currJointName, parent=linkName,
+                                           child=nextLinkName, type="revolute", position=[0, 0, -self.connectLinks[self.connectLinksKeys[i+1]][2]])
                     self.joints[i] = currJointName
 
         print(self.joints)
@@ -96,21 +218,21 @@ class SOLUTION:
     def Create_Brain(self):
 
         pyrosim.Start_NeuralNetwork("brain" + str(self.myID) + ".nndf")
-        for i in range(0, len(self.sensors)):
-            if self.sensors[i] == "Link" + str(i):
-                pyrosim.Send_Sensor_Neuron(
-                    name=i, linkName=str(self.sensors[i]))
+        # for i in range(0, len(self.sensors)):
+        #     if self.sensors[i] == "Link" + str(i):
+        #         pyrosim.Send_Sensor_Neuron(
+        #             name=i, linkName=str(self.sensors[i]))
 
-        for i in range(0, self.numMotors-1):
-            if i < len(self.joints):
-                pyrosim.Send_Motor_Neuron(
-                    name=self.numLinks+i, jointName=str(self.joints[i]))
+        # for i in range(0, self.numMotors-1):
+        #     if i < len(self.joints):
+        #         pyrosim.Send_Motor_Neuron(
+        #             name=self.numLinks+i, jointName=str(self.joints[i]))
 
-        for currentRow in range(len(self.sensors)):
-            if self.sensors[currentRow] == "Link" + str(currentRow):
-                for currentColumn in range(self.numMotors):
-                    pyrosim.Send_Synapse(currentRow, currentColumn +
-                                         len(self.sensors)-1, 1)
+        # for currentRow in range(len(self.sensors)):
+        #     if self.sensors[currentRow] == "Link" + str(currentRow):
+        #         for currentColumn in range(self.numMotors):
+        #             pyrosim.Send_Synapse(currentRow, currentColumn +
+        #                                  len(self.sensors)-1, 1)
         pyrosim.End()
 
     def Mutate(self):
