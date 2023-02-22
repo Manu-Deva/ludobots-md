@@ -74,6 +74,11 @@ class SOLUTION:
 
             currJointName = currLinkName + "_" + nextLinkName
             if self.d == 1:
+                # dist = sum([abs(nextLinkPos[i] - currLinkPos[i])
+                #             for i in range(3)]) - sum([currLinkSize[i] for i in range(3)])
+
+                # while dist < 0.5*sum(nextLinkSize) + 0.5*sum(currLinkSize):
+                #     self.d = random.randint(1, 6)
                 match prevd:
                     case 0:
                         jointMovement = [currLinkSize[0], 0, 0]
@@ -96,6 +101,7 @@ class SOLUTION:
 
                 currLinkPos = [0.5*currLinkSize[0], 0, 0]
                 nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+
                 if currLinkName not in self.generatedLinks:
                     pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
                                       colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
@@ -103,6 +109,11 @@ class SOLUTION:
 
                 if (self.link.connectedLinks[currLinkName] is None):
                     break
+
+                while (nextLinkPos[0] - currLinkPos[0] <= 0 and nextLinkPos[1] - currLinkPos[1] <= 0 and nextLinkPos[2] - currLinkPos[2] <= 0):
+                    nextLinkPos[0] += 0.01*nextLinkSize[0]
+                    nextLinkPos[1] += 0.01*nextLinkSize[1]
+                    nextLinkPos[2] += 0.01*nextLinkSize[2]
 
                 pyrosim.Send_Joint(
                     name=currJointName, parent=currLinkName, child=nextLinkName,
@@ -137,8 +148,8 @@ class SOLUTION:
                     case 6:
                         jointMovement = [
                             0, 0.5*currLinkSize[1], -0.5*currLinkSize[2]]
-                currLinkPos = [0, 0.5*currLinkSize[0], 0]
-                nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+                currLinkPos = [0, 0.5*currLinkSize[1], 0]
+                nextLinkPos = [0, 0.5*nextLinkSize[1], 0]
                 if currLinkName not in self.generatedLinks:
                     pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
                                       colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
@@ -146,6 +157,11 @@ class SOLUTION:
 
                 if (self.link.connectedLinks[currLinkName] is None):
                     break
+
+                while (nextLinkPos[0] - currLinkPos[0] <= 0 and nextLinkPos[1] - currLinkPos[1] <= 0 and nextLinkPos[2] - currLinkPos[2] <= 0):
+                    nextLinkPos[0] += 0.01*nextLinkSize[0]
+                    nextLinkPos[1] += 0.01*nextLinkSize[1]
+                    nextLinkPos[2] += 0.01*nextLinkSize[2]
 
                 pyrosim.Send_Joint(
                     name=currJointName, parent=currLinkName, child=nextLinkName,
@@ -180,8 +196,8 @@ class SOLUTION:
                             0, -0.5*currLinkSize[1], 0.5*currLinkSize[2]]
                     case 6:
                         jointMovement = [0, 0, currLinkSize[2]]
-                currLinkPos = [0, 0, 0.5*currLinkSize[0]]
-                nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+                currLinkPos = [0, 0, 0.5*currLinkSize[2]]
+                nextLinkPos = [0, 0, 0.5*nextLinkSize[2]]
                 if currLinkName not in self.generatedLinks:
                     pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
                                       colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
@@ -189,6 +205,11 @@ class SOLUTION:
 
                 if (self.link.connectedLinks[currLinkName] is None):
                     break
+
+                while (nextLinkPos[0] - currLinkPos[0] <= 0 and nextLinkPos[1] - currLinkPos[1] <= 0 and nextLinkPos[2] - currLinkPos[2] <= 0):
+                    nextLinkPos[0] += 0.01*nextLinkSize[0]
+                    nextLinkPos[1] += 0.01*nextLinkSize[1]
+                    nextLinkPos[2] += 0.01*nextLinkSize[2]
 
                 pyrosim.Send_Joint(
                     name=currJointName, parent=currLinkName, child=nextLinkName,
@@ -224,7 +245,7 @@ class SOLUTION:
                         jointMovement = [-0.5*currLinkSize[0],
                                          0, -0.5*currLinkSize[2]]
                 currLinkPos = [-0.5*currLinkSize[0], 0, 0]
-                nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+                nextLinkPos = [-0.5*nextLinkSize[0], 0, 0]
                 if currLinkName not in self.generatedLinks:
                     pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
                                       colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
@@ -232,6 +253,11 @@ class SOLUTION:
 
                 if (self.link.connectedLinks[currLinkName] is None):
                     break
+
+                while (nextLinkPos[0] - currLinkPos[0] <= 0 and nextLinkPos[1] - currLinkPos[1] <= 0 and nextLinkPos[2] - currLinkPos[2] <= 0):
+                    nextLinkPos[0] += 0.01*nextLinkSize[0]
+                    nextLinkPos[1] += 0.01*nextLinkSize[1]
+                    nextLinkPos[2] += 0.01*nextLinkSize[2]
 
                 pyrosim.Send_Joint(
                     name=currJointName, parent=currLinkName, child=nextLinkName,
@@ -266,8 +292,8 @@ class SOLUTION:
                     case 6:
                         jointMovement = [
                             0, -0.5*currLinkSize[1], -0.5*currLinkSize[2]]
-                currLinkPos = [0, -0.5*currLinkSize[0], 0]
-                nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+                currLinkPos = [0, -0.5*currLinkSize[1], 0]
+                nextLinkPos = [0, -0.5*nextLinkSize[1], 0]
                 if currLinkName not in self.generatedLinks:
                     pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
                                       colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
@@ -275,6 +301,11 @@ class SOLUTION:
 
                 if (self.link.connectedLinks[currLinkName] is None):
                     break
+
+                while (nextLinkPos[0] - currLinkPos[0] <= 0 and nextLinkPos[1] - currLinkPos[1] <= 0 and nextLinkPos[2] - currLinkPos[2] <= 0):
+                    nextLinkPos[0] += 0.01*nextLinkSize[0]
+                    nextLinkPos[1] += 0.01*nextLinkSize[1]
+                    nextLinkPos[2] += 0.01*nextLinkSize[2]
 
                 pyrosim.Send_Joint(
                     name=currJointName, parent=currLinkName, child=nextLinkName,
@@ -308,8 +339,8 @@ class SOLUTION:
                             0, -0.5*currLinkSize[1], -0.5*currLinkSize[2]]
                     case 6:
                         jointMovement = [0, 0, -currLinkSize[2]]
-                currLinkPos = [0, 0, -0.5*currLinkSize[0]]
-                nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+                currLinkPos = [0, 0, -0.5*currLinkSize[2]]
+                nextLinkPos = [0, 0, -0.5*nextLinkSize[2]]
                 if currLinkName not in self.generatedLinks:
                     pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
                                       colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
@@ -317,6 +348,11 @@ class SOLUTION:
 
                 if (self.link.connectedLinks[currLinkName] is None):
                     break
+
+                while (nextLinkPos[0] - currLinkPos[0] <= 0 and nextLinkPos[1] - currLinkPos[1] <= 0 and nextLinkPos[2] - currLinkPos[2] <= 0):
+                    nextLinkPos[0] += 0.01*nextLinkSize[0]
+                    nextLinkPos[1] += 0.01*nextLinkSize[1]
+                    nextLinkPos[2] += 0.01*nextLinkSize[2]
 
                 pyrosim.Send_Joint(
                     name=currJointName, parent=currLinkName, child=nextLinkName,
