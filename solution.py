@@ -13,6 +13,7 @@ class SOLUTION:
         self.link = LINK()
         self.numMotors = self.link.x - 1
         self.joints = list(range(self.numMotors))
+        self.randomPos = self.link.linkPos
 
         self.sensors = list(range(self.link.x))
 
@@ -29,6 +30,8 @@ class SOLUTION:
                        1: {"colorString": '    <color rgba="0.0 1.0 0.0 1.0"/>',
                            "color": "Green"}
                        }
+
+        self.generatedLinks = {self.link.rootLink}
 
         self.weights = (np.random.rand(
             len(self.links_with_sensors)-1, self.numMotors-2)*2) - 1
@@ -54,110 +57,279 @@ class SOLUTION:
     def Create_Random_Size(self):
         return [random.uniform(0.5, 1.5), random.uniform(1.0, 1.5), random.uniform(1.0, 1.5)]
 
-    def Create_Random_Pos(self):
-        return [random.randint(0, 5), random.uniform(0, 5), random.uniform(0, 5)]
-
     def Create_Body(self):
         pyrosim.Start_URDF("body.urdf")
-        randomPos = self.Create_Random_Pos()
-        for i in range(0, self.link.x):
-            if self.link.d == 1:
-                if (i == self.link.x - 1):
-                    pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                      colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
+        prevd = 1
+        for link in self.link.connectedLinks:
+            self.d = random.randint(1, 6)
+            opposite_directions = {1: 4, 2: 5, 3: 6, 4: 1, 5: 2, 6: 3}
+            while self.d == opposite_directions[prevd]:
+                self.d = random.randint(1, 6)
+            self.c = random.randint(0, 1)
+            currLinkName = str(link)
+            nextLinkName = str(self.link.connectedLinks[currLinkName])
+            currLinkSize = self.link.links[currLinkName]
+            if (self.link.connectedLinks[currLinkName] is not None):
+                nextLinkSize = self.link.links[nextLinkName]
+
+            currJointName = currLinkName + "_" + nextLinkName
+            if self.d == 1:
+                match prevd:
+                    case 0:
+                        jointMovement = [currLinkSize[0], 0, 0]
+                    case 1:
+                        jointMovement = [currLinkSize[0], 0, 0]
+                    case 2:
+                        jointMovement = [0.5*currLinkSize[0],
+                                         0.5*currLinkSize[1], 0]
+                    case 3:
+                        jointMovement = [0.5*currLinkSize[0],
+                                         0, 0.5*currLinkSize[2]]
+                    case 4:
+                        jointMovement = [currLinkSize[0], 0, 0]
+                    case 5:
+                        jointMovement = [0.5*currLinkSize[0],
+                                         -0.5*currLinkSize[1], 0]
+                    case 6:
+                        jointMovement = [
+                            0.5*currLinkSize[0], 0, -0.5*currLinkSize[2]]
+
+                currLinkPos = [0.5*currLinkSize[0], 0, 0]
+                nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+                if currLinkName not in self.generatedLinks:
+                    pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(currLinkName)
+
+                if (self.link.connectedLinks[currLinkName] is None):
                     break
 
-                pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                  colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
                 pyrosim.Send_Joint(
-                    name=self.link.selectedJoints[i], parent=self.link.selectedLinks[i], child=self.link.selectedLinks[i+1],
-                    type="revolute", position=[randomPos[0]+(0.5*self.link.links[self.link.selectedLinks[i]][0]), 0, 0])
-                # pyrosim.Send_Cube(name=self.link.selectedLinks[i+1], pos=[], size=self.link.links[self.link.selectedLinks[i+1]],
-                #                   colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
+                    name=currJointName, parent=currLinkName, child=nextLinkName,
+                    type="revolute", position=jointMovement)
+                if nextLinkName not in self.generatedLinks:
 
-            if self.link.d == 2:
-                if (i == self.link.x - 1):
-                    pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                      colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
+                    self.c = random.randint(0, 1)
+
+                    pyrosim.Send_Cube(name=nextLinkName, pos=nextLinkPos, size=nextLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(nextLinkName)
+
+                prevd = self.d
+
+            if self.d == 2:
+                match prevd:
+                    case 0:
+                        jointMovement = [0, currLinkSize[1], 0]
+                    case 1:
+                        jointMovement = [0.5*currLinkSize[0],
+                                         0.5*currLinkSize[1], 0]
+                    case 2:
+                        jointMovement = [0, currLinkSize[1], 0]
+                    case 3:
+                        jointMovement = [0,
+                                         0.5*currLinkSize[1], 0.5*currLinkSize[2]]
+                    case 4:
+                        jointMovement = [-0.5*currLinkSize[0],
+                                         0.5*currLinkSize[1], 0]
+                    case 5:
+                        jointMovement = [0, currLinkSize[1], 0]
+                    case 6:
+                        jointMovement = [
+                            0, 0.5*currLinkSize[1], -0.5*currLinkSize[2]]
+                currLinkPos = [0, 0.5*currLinkSize[0], 0]
+                nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+                if currLinkName not in self.generatedLinks:
+                    pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(currLinkName)
+
+                if (self.link.connectedLinks[currLinkName] is None):
                     break
-                pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                  colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
-                pyrosim.Send_Joint(
-                    name=self.link.selectedJoints[i], parent=self.link.selectedLinks[i], child=self.link.selectedLinks[i+1],
-                    type="revolute", position=[0, randomPos[0]+(0.5*self.link.links[self.link.selectedLinks[i]][0]), 0])
-                # pyrosim.Send_Cube(name=self.link.selectedLinks[i+1], pos=[], size=self.link.links[self.link.selectedLinks[i+1]],
-                #                   colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
 
-            if self.link.d == 3:
-                if (i == self.link.x - 1):
-                    pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                      colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
+                pyrosim.Send_Joint(
+                    name=currJointName, parent=currLinkName, child=nextLinkName,
+                    type="revolute", position=jointMovement)
+                if nextLinkName not in self.generatedLinks:
+
+                    self.c = random.randint(0, 1)
+
+                    pyrosim.Send_Cube(name=nextLinkName, pos=nextLinkPos, size=nextLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(nextLinkName)
+
+                prevd = self.d
+
+            if self.d == 3:
+                match prevd:
+                    case 0:
+                        jointMovement = [0, 0, currLinkSize[2]]
+                    case 1:
+                        jointMovement = [0.5*currLinkSize[0],
+                                         0, 0.5*currLinkSize[2]]
+                    case 2:
+                        jointMovement = [
+                            0, 0.5*currLinkSize[1], 0.5*currLinkSize[2]]
+                    case 3:
+                        jointMovement = [0, 0, currLinkSize[2]]
+                    case 4:
+                        jointMovement = [-0.5*currLinkSize[0],
+                                         0, 0.5*currLinkSize[2]]
+                    case 5:
+                        jointMovement = [
+                            0, -0.5*currLinkSize[1], 0.5*currLinkSize[2]]
+                    case 6:
+                        jointMovement = [0, 0, currLinkSize[2]]
+                currLinkPos = [0, 0, 0.5*currLinkSize[0]]
+                nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+                if currLinkName not in self.generatedLinks:
+                    pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(currLinkName)
+
+                if (self.link.connectedLinks[currLinkName] is None):
                     break
-                pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                  colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
-                pyrosim.Send_Joint(
-                    name=self.link.selectedJoints[i], parent=self.link.selectedLinks[i], child=self.link.selectedLinks[i+1],
-                    type="revolute", position=[0, 0, randomPos[0]+(0.5*self.link.links[self.link.selectedLinks[i]][0])])
-                # pyrosim.Send_Cube(name=self.link.selectedLinks[i+1], pos=[], size=self.link.links[self.link.selectedLinks[i+1]],
-                #                   colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
 
-            if self.link.d == 4:
-                if (i == self.link.x - 1):
-                    pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                      colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
+                pyrosim.Send_Joint(
+                    name=currJointName, parent=currLinkName, child=nextLinkName,
+                    type="revolute", position=jointMovement)
+                if nextLinkName not in self.generatedLinks:
+
+                    self.c = random.randint(0, 1)
+
+                    pyrosim.Send_Cube(name=nextLinkName, pos=nextLinkPos, size=nextLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(nextLinkName)
+
+                prevd = self.d
+
+            if self.d == 4:
+                match prevd:
+                    case 0:
+                        jointMovement = [-currLinkSize[0], 0, 0]
+                    case 1:
+                        jointMovement = [-currLinkSize[0], 0, 0]
+                    case 2:
+                        jointMovement = [-0.5*currLinkSize[0],
+                                         0.5*currLinkSize[1], 0]
+                    case 3:
+                        jointMovement = [-0.5*currLinkSize[0],
+                                         0, 0.5*currLinkSize[2]]
+                    case 4:
+                        jointMovement = [-currLinkSize[0], 0, 0]
+                    case 5:
+                        jointMovement = [-0.5*currLinkSize[0],
+                                         -0.5*currLinkSize[1], 0]
+                    case 6:
+                        jointMovement = [-0.5*currLinkSize[0],
+                                         0, -0.5*currLinkSize[2]]
+                currLinkPos = [-0.5*currLinkSize[0], 0, 0]
+                nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+                if currLinkName not in self.generatedLinks:
+                    pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(currLinkName)
+
+                if (self.link.connectedLinks[currLinkName] is None):
                     break
-                pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                  colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
-                pyrosim.Send_Joint(
-                    name=self.link.selectedJoints[i], parent=self.link.selectedLinks[i], child=self.link.selectedLinks[i+1],
-                    type="revolute", position=[randomPos[0]-(0.5*self.link.links[self.link.selectedLinks[i]][0]), 0, 0])
-                # pyrosim.Send_Cube(name=self.link.selectedLinks[i+1], pos=[], size=self.link.links[self.link.selectedLinks[i+1]],
-                #                   colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
 
-            if self.link.d == 5:
-                if (i == self.link.x - 1):
-                    pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                      colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
+                pyrosim.Send_Joint(
+                    name=currJointName, parent=currLinkName, child=nextLinkName,
+                    type="revolute", position=jointMovement)
+                if nextLinkName not in self.generatedLinks:
+
+                    self.c = random.randint(0, 1)
+
+                    pyrosim.Send_Cube(name=nextLinkName, pos=nextLinkPos, size=nextLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(nextLinkName)
+
+                prevd = self.d
+
+            if self.d == 5:
+                match prevd:
+                    case 0:
+                        jointMovement = [0, -currLinkSize[1], 0]
+                    case 1:
+                        jointMovement = [
+                            0.5*currLinkSize[0], -0.5*currLinkSize[1], 0]
+                    case 2:
+                        jointMovement = [0, -currLinkSize[1], 0]
+                    case 3:
+                        jointMovement = [
+                            0, -0.5*currLinkSize[1], 0.5*currLinkSize[2]]
+                    case 4:
+                        jointMovement = [-0.5*currLinkSize[0], -
+                                         0.5*currLinkSize[1], 0]
+                    case 5:
+                        jointMovement = [0, -currLinkSize[1], 0]
+                    case 6:
+                        jointMovement = [
+                            0, -0.5*currLinkSize[1], -0.5*currLinkSize[2]]
+                currLinkPos = [0, -0.5*currLinkSize[0], 0]
+                nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+                if currLinkName not in self.generatedLinks:
+                    pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(currLinkName)
+
+                if (self.link.connectedLinks[currLinkName] is None):
                     break
-                pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                  colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
-                pyrosim.Send_Joint(
-                    name=self.link.selectedJoints[i], parent=self.link.selectedLinks[i], child=self.link.selectedLinks[i+1],
-                    type="revolute", position=[0, randomPos[0]-(0.5*self.link.links[self.link.selectedLinks[i]][0]), 0])
-                # pyrosim.Send_Cube(name=self.link.selectedLinks[i+1], pos=[], size=self.link.links[self.link.selectedLinks[i+1]],
-                #                   colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
 
-            if self.link.d == 6:
-                if (i == self.link.x - 1):
-                    pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                      colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
+                pyrosim.Send_Joint(
+                    name=currJointName, parent=currLinkName, child=nextLinkName,
+                    type="revolute", position=jointMovement)
+                if nextLinkName not in self.generatedLinks:
+
+                    self.c = random.randint(0, 1)
+
+                    pyrosim.Send_Cube(name=nextLinkName, pos=nextLinkPos, size=nextLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(nextLinkName)
+
+                prevd = self.d
+            if self.d == 6:
+                match prevd:
+                    case 0:
+                        jointMovement = [0, 0, -currLinkSize[2]]
+                    case 1:
+                        jointMovement = [0.5*currLinkSize[0],
+                                         0, -0.5*currLinkSize[2]]
+                    case 2:
+                        jointMovement = [
+                            0, 0.5*currLinkSize[1], -0.5*currLinkSize[2]]
+                    case 3:
+                        jointMovement = [0, 0, -currLinkSize[2]]
+                    case 4:
+                        jointMovement = [-0.5*currLinkSize[0],
+                                         0, -0.5*currLinkSize[2]]
+                    case 5:
+                        jointMovement = [
+                            0, -0.5*currLinkSize[1], -0.5*currLinkSize[2]]
+                    case 6:
+                        jointMovement = [0, 0, -currLinkSize[2]]
+                currLinkPos = [0, 0, -0.5*currLinkSize[0]]
+                nextLinkPos = [0.5*nextLinkSize[0], 0, 0]
+                if currLinkName not in self.generatedLinks:
+                    pyrosim.Send_Cube(name=currLinkName, pos=currLinkPos, size=currLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(currLinkName)
+
+                if (self.link.connectedLinks[currLinkName] is None):
                     break
-                pyrosim.Send_Cube(name=self.link.selectedLinks[i], pos=[randomPos], size=self.link.links[self.link.selectedLinks[i]],
-                                  colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
-                pyrosim.Send_Joint(
-                    name=self.link.selectedJoints[i], parent=self.link.selectedLinks[i], child=self.link.selectedLinks[i+1],
-                    type="revolute", position=[0, 0, randomPos[0]-(0.5*self.link.links[self.link.selectedLinks[i]][0])])
-                # pyrosim.Send_Cube(name=self.link.selectedLinks[i+1], pos=[], size=self.link.links[self.link.selectedLinks[i+1]],
-                #                   colorString=self.colors[self.link.c]["colorString"], colorString=self.colors[self.link.c]["color"])
 
-                if direction == 1:
-                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
-                                       child=nextLink, type="revolute", position=[linkPos[0]+0.5*linkSize[0], 0, 2.5])  # x
-                if direction == 2:
-                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
-                                       child=nextLink, type="revolute", position=[2.5, linkPos[0]+0.5*linkSize[0], 2.5])  # y
-                if direction == 3:
-                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
-                                       child=nextLink, type="revolute", position=[2.5, 0, linkPos[0]+0.5*linkSize[0]])  # z
-                if direction == 4:
-                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
-                                       child=nextLink, type="revolute", position=[linkPos[0]-0.5*linkSize[0], 0, 2.5])  # -x
-                if direction == 5:
-                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
-                                       child=nextLink, type="revolute", position=[2.5, linkPos[0]-0.5*linkSize[0], 2.5])  # -y
-                if direction == 6:
-                    pyrosim.Send_Joint(name=currJointName, parent=currLink,
-                                       child=nextLink, type="revolute", position=[2.5, 0, linkPos[0]-0.5*linkSize[0]])  # -z
+                pyrosim.Send_Joint(
+                    name=currJointName, parent=currLinkName, child=nextLinkName,
+                    type="revolute", position=jointMovement)
+                if nextLinkName not in self.generatedLinks:
+
+                    self.c = random.randint(0, 1)
+
+                    pyrosim.Send_Cube(name=nextLinkName, pos=nextLinkPos, size=nextLinkSize,
+                                      colorString=self.colors[self.c]["colorString"], colorName=self.colors[self.c]["color"])
+                    self.generatedLinks.add(nextLinkName)
+
+                prevd = self.d
 
         pyrosim.End()
 
