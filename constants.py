@@ -14,5 +14,8 @@ LegPhaseOffset = 2*np.pi
 
 force = 50
 numberOfGenerations = 5
-
 populationSize = 1
+
+numSensorNeurons = 9
+numMotorNeurons = 8
+motorJointRange = 0.1
