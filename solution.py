@@ -4,10 +4,12 @@ import random
 import os
 import time
 import constants as c
+from links import LINK
 
 
 class SOLUTION:
     def __init__(self, nextAvailableID) -> None:
+        self.link = LINK()
         self.myID = nextAvailableID
         self.numLinks = random.randint(2, 8)
         self.numMotors = self.numLinks - 1
@@ -24,6 +26,8 @@ class SOLUTION:
 
         self.weights = (np.random.rand(
             c.numSensorNeurons, c.numMotorNeurons)*2) - 1
+
+        self.allLinks = self.link.linkDictionary
 
     def Evaluate(self, directOrGUI):
         self.Create_Body()
@@ -48,21 +52,122 @@ class SOLUTION:
 
     def Create_Body(self):
         pyrosim.Start_URDF("body.urdf")
-        pyrosim.Send_Cube(name="Torso", pos=[0, 0, 1], size=[1, 1, 1])
+        torsoSize = [1, 1, 1]
+        backLegSize = self.Create_Random_Size()
+        frontLegSize = self.Create_Random_Size()
+        rightLegSize = self.Create_Random_Size()
+        leftLegSize = self.Create_Random_Size()
+        topLegSize = self.Create_Random_Size()
+        bottomLegSize = self.Create_Random_Size()
+
+        pyrosim.Send_Cube(name="Torso", pos=[0, 0, 1], size=torsoSize)
+
+        for i in range(self.allLinks.len()):
+            for connection in self.allLinks[i]["connections"]:
+                jointName = "Link"+str(i)+"_"+"Link"+str(connection)
+                parentName = "Link"+str(i)
+                childName = "Link"+str(connection)
+                randomAxis = random.randint(0, 2)
+                direction = random.randint(0, 1)
+                if randomAxis == 0:
+                    randomJointAxis = "0 1 0"
+                    if direction == 0:
+                        pyrosim.Send_Joint(name=jointName, parent=parentName,
+                                           child=childName, type="revolute", position=[self.allLinks[i]["size"][randomAxis]/2,
+                                                                                       self.allLinks[i]["size"][1],
+                                                                                       self.allLinks[i]["size"][2]],
+                                           jointAxis=randomJointAxis)
+                        pyrosim.Send_Cube(name=childName, pos=[
+                                          self.allLinks[connection]["size"][0]/2, 0, 0], size=self.allLinks[connection]["size"],
+                                          colorString=self.allLinks[connection]["cString"], colorName=self.allLinks[connection]["cName"])
+                    if direction == 1:
+                        pyrosim.Send_Joint(name=jointName, parent=parentName,
+                                           child=childName, type="revolute", position=[-self.allLinks[i]["size"][randomAxis]/2,
+                                                                                       self.allLinks[i]["size"][1],
+                                                                                       self.allLinks[i]["size"][2]],
+                                           jointAxis=randomJointAxis)
+                        pyrosim.Send_Cube(name=childName, pos=[
+                                          -self.allLinks[connection]["size"][0]/2, 0, 0], size=self.allLinks[connection]["size"],
+                                          colorString=self.allLinks[connection]["cString"], colorName=self.allLinks[connection]["cName"])
+
+                if randomAxis == 1:
+                    randomJointAxis = "1 0 0"
+                    if direction == 0:
+                        pyrosim.Send_Joint(name=jointName, parent=parentName,
+                                           child=childName, type="revolute", position=[self.allLinks[i]["size"][0],
+                                                                                       self.allLinks[i]["size"][randomAxis]/2,
+                                                                                       self.allLinks[i]["size"][2]],
+                                           jointAxis=randomJointAxis)
+                        pyrosim.Send_Cube(name=childName, pos=[
+                            0, self.allLinks[connection]["size"][0]/2, 0], size=self.allLinks[connection]["size"],
+                            colorString=self.allLinks[connection]["cString"], colorName=self.allLinks[connection]["cName"])
+                    if direction == 1:
+                        pyrosim.Send_Joint(name=jointName, parent=parentName,
+                                           child=childName, type="revolute", position=[self.allLinks[i]["size"][0],
+                                                                                       -self.allLinks[i]["size"][randomAxis]/2,
+                                                                                       self.allLinks[i]["size"][2]],
+                                           jointAxis=randomJointAxis)
+                        pyrosim.Send_Cube(name=childName, pos=[
+                            0, -self.allLinks[connection]["size"][0]/2, 0], size=self.allLinks[connection]["size"],
+                            colorString=self.allLinks[connection]["cString"], colorName=self.allLinks[connection]["cName"])
+                if randomAxis == 2:
+                    randomJointAxis = "0 0 1"
+                    if direction == 0:
+                        pyrosim.Send_Joint(name=jointName, parent=parentName,
+                                           child=childName, type="revolute", position=[self.allLinks[i]["size"][0],
+                                                                                       self.allLinks[i]["size"][1],
+                                                                                       self.allLinks[i]["size"][randomAxis]/2],
+                                           jointAxis=randomJointAxis)
+                        pyrosim.Send_Cube(name=childName, pos=[
+                            0, 0, self.allLinks[connection]["size"][0]/2], size=self.allLinks[connection]["size"],
+                            colorString=self.allLinks[connection]["cString"], colorName=self.allLinks[connection]["cName"])
+                    if direction == 1:
+                        pyrosim.Send_Joint(name=jointName, parent=parentName,
+                                           child=childName, type="revolute", position=[self.allLinks[i]["size"][0],
+                                                                                       self.allLinks[i]["size"][1],
+                                                                                       -self.allLinks[i]["size"][randomAxis]/2],
+                                           jointAxis=randomJointAxis)
+                        pyrosim.Send_Cube(name=childName, pos=[
+                            0, 0, -self.allLinks[connection]["size"][0]/2], size=self.allLinks[connection]["size"],
+                            colorString=self.allLinks[connection]["cString"], colorName=self.allLinks[connection]["cName"])
+
+        "___________________________________________________________________________________________________-"
+
         pyrosim.Send_Joint(name="Torso_BackLeg", parent="Torso",
-                           child="BackLeg", type="revolute", position=[0, -0.5, 1], jointAxis="1 0 0")
-        pyrosim.Send_Cube(name="BackLeg", pos=[0, -0.5, 0], size=[0.2, 1, 0.2])
+                           child="BackLeg", type="revolute", position=[0, -torsoSize[1]/2, 1], jointAxis="1 0 0")
+        pyrosim.Send_Cube(name="BackLeg", pos=[
+                          0, -backLegSize[1]/2, 0], size=backLegSize)
+
         pyrosim.Send_Joint(name="Torso_FrontLeg", parent="Torso",
-                           child="FrontLeg", type="revolute", position=[0, 0.5, 1], jointAxis="1 0 0")
-        pyrosim.Send_Cube(name="FrontLeg", pos=[0, 0.5, 0], size=[0.2, 1, 0.2])
+                           child="FrontLeg", type="revolute", position=[0, torsoSize[1]/2, 1], jointAxis="1 0 0")
+        pyrosim.Send_Cube(name="FrontLeg", pos=[
+                          0, frontLegSize[1]/2, 0], size=frontLegSize)
+
+        "___________________________________________________________________________________________________-"
 
         pyrosim.Send_Joint(name="Torso_LeftLeg", parent="Torso",
-                           child="LeftLeg", type="revolute", position=[-0.5, 0, 1], jointAxis="0 1 0")
-        pyrosim.Send_Cube(name="LeftLeg", pos=[-0.5, 0, 0], size=[1, 0.2, 0.2])
+                           child="LeftLeg", type="revolute", position=[-torsoSize[0]/2, 0, 1], jointAxis="0 1 0")
+        pyrosim.Send_Cube(
+            name="LeftLeg", pos=[-leftLegSize[0]/2, 0, 0], size=leftLegSize)
 
         pyrosim.Send_Joint(name="Torso_RightLeg", parent="Torso",
-                           child="RightLeg", type="revolute", position=[0.5, 0, 1], jointAxis="0 1 0")
-        pyrosim.Send_Cube(name="RightLeg", pos=[0.5, 0, 0], size=[1, 0.2, 0.2])
+                           child="RightLeg", type="revolute", position=[torsoSize[0]/2, 0, 1], jointAxis="0 1 0")
+        pyrosim.Send_Cube(name="RightLeg", pos=[
+                          rightLegSize[0]/2, 0, 0], size=rightLegSize)
+
+        "___________________________________________________________________________________________________-"
+
+        pyrosim.Send_Joint(name="Torso_TopLeg", parent="Torso",
+                           child="TopLeg", type="revolute", position=[0, 0, 1.5], jointAxis="0 0 1")
+        pyrosim.Send_Cube(name="TopLeg", pos=[
+                          0, 0, topLegSize[2]/2], size=topLegSize)
+
+        pyrosim.Send_Joint(name="Torso_BottomLeg", parent="Torso",
+                           child="BottomLeg", type="revolute", position=[0, 0, 0.5], jointAxis="0 0 1")
+        pyrosim.Send_Cube(name="BottomLeg", pos=[
+                          0, 0, -bottomLegSize[2]/2], size=bottomLegSize)
+
+        "___________________________________________________________________________________________________-"
 
         pyrosim.Send_Joint(name="FrontLeg_FrontLowerLeg", parent="FrontLeg",
                            child="FrontLowerLeg", type="revolute", position=[0, 1, 0], jointAxis="1 0 0")
