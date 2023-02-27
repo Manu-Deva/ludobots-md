@@ -8,44 +8,49 @@ import time
 class LINK:
     def __init__(self):
         self.d = random.randint(1, 6)
-        self.x = random.randint(8, 15)
-
-        self.links = {}
-        for i in range(0, self.x):
-            self.links["Link" + str(i)] = self.Create_Random_Size()
-        self.linkNames = list(self.links.keys())
-
-        self.connectedLinks = {}
-        self.connectingJoints = {}
-        self.initialLinks = list(range(len(self.linkNames)))
-
-        self.Connect_Links()
-
-        self.connectedLinkKeys = list(range(len(self.connectedLinks)))
-        self.rootLink = self.connectedLinkKeys[0]
+        self.x = random.randint(4, 8)
 
         self.linkDictionary = {}
+        for i in range(0, self.x):
+            self.c = random.randint(0, 1)
+            self.linkDictionary[i] = {}
+            self.linkDictionary[i]["connections"] = []
+            self.linkDictionary[i]["size"] = self.Create_Random_Size()
+            if (self.c == 0):
+                self.linkDictionary[i]["cString"] = '    <color rgba="0.0 1.0 0.0 1.0"/>'
+                self.linkDictionary[i]["cName"] = "Green"
+            else:
+                self.linkDictionary[i]["cString"] = '    <color rgba="0.0 0.0 1.0 1.0"/>'
+                self.linkDictionary[i]["cName"] = "Blue"
+        self.linkNames = list(self.linkDictionary.keys())
+        self.poolLinks = list()
+
+        # self.connectedLinks = {}
+        # self.connectingJoints = {}
+        # self.initialLinks = list(range(len(self.linkNames)))
+
+        self.Connect_Links()
+        self.rootLink = "Link"+str(0)
+
+        # self.connectedLinkKeys = list(range(len(self.connectedLinks)))
+        # self.rootLink = self.connectedLinkKeys[0]
 
     def Create_Random_Size(self):
-        return [random.random()+0.5, random.random(), random.random()+0.10]
+        return [random.random()+0.5, random.random()+0.5, random.random()+0.5]
 
     def Create_Random_Pos(self):
         return [random.randint(0, 5), random.uniform(0, 5), random.uniform(0, 5)]
 
-    # def Connect_Links(self):
-    #     random.shuffle(self.linkNames)
-    #     initialLink = self.linkNames[1]
-
-    #     for i in range(1, len(self.linkNames)):
-    #         prevLink = self.linkNames[i-1]
-    #         currLink = self.linkNames[i]
+    def Connect_Links(self):
+        for i in range(1, self.x):
+            self.poolLinks.append(i-1)
+            # for num in range(random.randint(1, i)):
+            randomConnection = random.choice(self.poolLinks)
+            if randomConnection not in self.linkDictionary[i]["connections"]:
+                self.linkDictionary[i]["connections"].append(
+                    randomConnection)
+        print(self.linkDictionary)
 
     #         self.connectedLinks[prevLink] = currLink
-
-    #         jointName = prevLink + "_" + currLink
-    #         self.connectingJoints[prevLink] = jointName
-
-    #         # Set the position of the current link to a random value
-    #         self.linkPositions[currLink] = self.Create_Random_Pos()
     #     print(self.connectedLinks)
     #     print(self.connectingJoints)
