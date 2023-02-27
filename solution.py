@@ -36,7 +36,7 @@ class SOLUTION:
         self.Create_Body()
         self.Create_Brain()
         os.system("start /B python simulate.py " +
-                  "GUI" + " " + str(self.myID))
+                  "DIRECT" + " " + str(self.myID))
 
     def Wait_For_Simulation_To_End(self):
         fitnessFileName = "fitness" + str(self.myID) + ".txt"
@@ -84,8 +84,8 @@ class SOLUTION:
                 self.listJointNames.append(jointName)
                 parentName = "Link"+str(connection)
                 childName = "Link"+str(i)
-                randomAxis = random.randint(0, 2)
-                direction = random.randint(0, 1)
+                randomAxis = self.allLinks[connection]["randomAxis"]
+                direction = self.allLinks[connection]["direction"]
                 if randomAxis == 0:
                     randomJointAxis = "0 1 0"
                     if direction == 0:
@@ -235,14 +235,6 @@ class SOLUTION:
                                      weight=weights[listSensorNeurons.index(currentRow)][listMotorNeurons.index(currentColumn)])
 
         pyrosim.End()
-
-    # def get_values(self, i):
-    #     physicsClient = pyrosim.connect(pyrosim.DIRECT)
-    #     backLegSensorValues = np.zeros(c.numberOfGenerations)
-
-    #     backLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link(
-    #         "Limb1")
-    #     np.save('data/backLegSensorValues.npy', backLegSensorValues)
 
     def Mutate(self):
         randomRow = random.randint(0, len(self.weights) - 1)
