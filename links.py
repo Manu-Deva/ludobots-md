@@ -36,7 +36,7 @@ class LINK:
         # self.rootLink = self.connectedLinkKeys[0]
 
     def Create_Random_Size(self):
-        return [random.random()+0.5, random.random()+0.5, random.random()+0.5]
+        return [random.random()+0.1, random.random()+0.1, random.random()+0.1]
 
     def Create_Random_Pos(self):
         return [random.randint(0, 5), random.uniform(0, 5), random.uniform(0, 5)]
