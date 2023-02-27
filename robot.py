@@ -15,7 +15,7 @@ import os
 class ROBOT:
     def __init__(self, solutionID):
         self.motors = {}
-        self.robotId = p.loadURDF("body.urdf")
+        self.robotId = p.loadURDF("body" + solutionID + ".urdf")
         pyrosim.Prepare_To_Simulate(self.robotId)
         self.Prepare_to_Sense()
         self.Prepare_to_Act()

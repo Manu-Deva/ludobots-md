@@ -22,6 +22,8 @@ class LINK:
             else:
                 self.linkDictionary[i]["cString"] = '    <color rgba="0.0 0.0 1.0 1.0"/>'
                 self.linkDictionary[i]["cName"] = "Blue"
+            self.linkDictionary[i]["randomAxis"] = random.randint(0, 2)
+            self.linkDictionary[i]["direction"] = random.randint(0, 1)
         self.linkNames = list(self.linkDictionary.keys())
         self.poolLinks = list()
 

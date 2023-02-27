@@ -74,7 +74,7 @@ class SOLUTION:
         return [random.random()+0.5, random.random(), random.random()+0.10]
 
     def Create_Body(self):
-        pyrosim.Start_URDF("body.urdf")
+        pyrosim.Start_URDF("body" + str(self.myID) + ".urdf")
         torsoSize = [1, 1, 1]
 
         pyrosim.Send_Cube(name="Link0", pos=[0, 0, 1], size=torsoSize)
