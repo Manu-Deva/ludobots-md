@@ -50,10 +50,10 @@ class ROBOT:
         positionOfLinkZero = stateOfLinkZero[0]
         xCoordinateOfLinkZero = positionOfLinkZero[0]
         f = open("tmp" + self.solutionID + ".txt", "w")
-        f.write(str(xCoordinateOfLinkZero))
-        f.close()
         os.rename("tmp"+str(self.solutionID)+".txt",
                   "fitness"+str(self.solutionID)+".txt")
+        f.write(str(xCoordinateOfLinkZero))
+        f.close()
 
     def Think(self):
         self.nn.Update()
