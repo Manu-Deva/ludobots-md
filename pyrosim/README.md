@@ -1,6 +1,6 @@
 # Assignment 8 - Parallel Hill Climbing of 3D Creatures - CS396 Northwestern University
 
-Youtube Link - https://youtu.be/LmMJHOGKrx8
+Youtube Link - https://youtu.be/BKG4CtIoVcM
 
 The pyrosim graphical interface, pybullet physics engine, and other python libraries were used in the codebase of this assignment. Special thanks to Campuswire for helping to debug.
 Ludobots MOOC -  https://www.reddit.com/r/ludobots/
