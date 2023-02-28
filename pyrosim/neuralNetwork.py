@@ -43,11 +43,22 @@ class NEURAL_NETWORK:
     def Is_Motor_Neuron(self, neuronName):
         return self.neurons[neuronName].Is_Motor_Neuron()
 
+    def Is_Sensor_Neuron(self, neuronName):
+        return self.neurons[neuronName].Is_Sensor_Neuron()
+
     def Get_Motor_Neurons_Joint(self, neuronName):
         return self.neurons[neuronName].Get_Joint_Name()
 
     def Get_Value_Of(self, neuronName):
         return self.neurons[neuronName].Get_Value()
+
+    def Generate_List_Of_Sensor_Neurons(self):
+        listOfSensorNeurons = []
+        for neuron in self.neurons:
+            if self.Is_Sensor_Neuron(neuron):
+                listOfSensorNeurons.append(
+                    self.neurons[neuron].Get_Link_Name())
+        return listOfSensorNeurons
 
         # ---------------- Private methods --------------------------------------
 

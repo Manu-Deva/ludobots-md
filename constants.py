@@ -13,8 +13,8 @@ LegFrequency = 200
 LegPhaseOffset = 2*np.pi
 
 force = 50
-numberOfGenerations = 10
-populationSize = 10
+numberOfGenerations = 20
+populationSize = 5
 
 numSensorNeurons = 9
 numMotorNeurons = 8

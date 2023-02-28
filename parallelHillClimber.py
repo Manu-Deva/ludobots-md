@@ -2,11 +2,15 @@ from solution import SOLUTION
 import constants as c
 import copy
 import os
+import numpy as np
+import matplotlib.pyplot as plt
+import time
 
 
 class PARALLEL_HILL_CLIMBER:
     def __init__(self):
         os.system("del brain*.nndf")
+        os.system("del body*.urdf")
         os.system("del fitness*.txt")
         self.parents = {}
         self.nextAvailableID = 0
@@ -73,7 +77,13 @@ class PARALLEL_HILL_CLIMBER:
                 fit = self.parents[i].fitness
                 j = i
 
-                # with open("file5.npy", "wb") as f:
-        #     np.save(f,np.array(self.data))
-
+        with open("file5.npy", "wb") as f:
+            np.save(f, np.array(self.data))
+        # print("about to reach plot")
+        # xArr = list(range(0, c.numberOfGenerations))
+        # plt.plot(xArr, self.data, color="red")
+        # plt.show()
+        # print("about to reach GUI of last one")
         self.parents[j].Start_Simulation("GUI")
+        self.parents[j].Wait_For_Simulation_To_End()
+        print("reached GUI of last one")

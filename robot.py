@@ -15,18 +15,20 @@ import os
 class ROBOT:
     def __init__(self, solutionID):
         self.motors = {}
-        self.robotId = p.loadURDF("body" + solutionID + ".urdf")
+        self.robotId = p.loadURDF("body" + str(solutionID) + ".urdf")
         pyrosim.Prepare_To_Simulate(self.robotId)
+        self.nn = NEURAL_NETWORK("brain" + str(solutionID) + ".nndf")
         self.Prepare_to_Sense()
         self.Prepare_to_Act()
         self.solutionID = solutionID
-        self.nn = NEURAL_NETWORK("brain" + solutionID + ".nndf")
-        os.system("del brain" + solutionID + ".nndf")
+
+        os.system("del brain" + str(solutionID) + ".nndf")
 
     def Prepare_to_Sense(self):
         self.sensors = {}
         for linkName in pyrosim.linkNamesToIndices:
-            self.sensors[linkName] = SENSOR(linkName)
+            if linkName in self.nn.Generate_List_Of_Sensor_Neurons():
+                self.sensors[linkName] = SENSOR(linkName)
 
     def Sense(self, t):
         for sensor in self.sensors:
@@ -50,10 +52,10 @@ class ROBOT:
         positionOfLinkZero = stateOfLinkZero[0]
         xCoordinateOfLinkZero = positionOfLinkZero[0]
         f = open("tmp" + self.solutionID + ".txt", "w")
-        os.rename("tmp"+str(self.solutionID)+".txt",
-                  "fitness"+str(self.solutionID)+".txt")
         f.write(str(xCoordinateOfLinkZero))
         f.close()
+        os.rename("tmp"+str(self.solutionID)+".txt",
+                  "fitness"+str(self.solutionID)+".txt")
 
     def Think(self):
         self.nn.Update()

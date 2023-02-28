@@ -36,7 +36,7 @@ class SOLUTION:
         self.Create_Body()
         self.Create_Brain()
         os.system("start /B python simulate.py " +
-                  "DIRECT" + " " + str(self.myID))
+                  directOrGUI + " " + str(self.myID))
 
     def Wait_For_Simulation_To_End(self):
         fitnessFileName = "fitness" + str(self.myID) + ".txt"
@@ -77,15 +77,15 @@ class SOLUTION:
         pyrosim.Start_URDF("body" + str(self.myID) + ".urdf")
         torsoSize = [1, 1, 1]
 
-        pyrosim.Send_Cube(name="Link0", pos=[0, 0, 1], size=torsoSize)
+        pyrosim.Send_Cube(name="Link0", pos=[0, 0, 1.5], size=torsoSize)
         for i in range(0, len(self.allLinks)):
             for connection in self.allLinks[i]["connections"]:
                 jointName = "Link"+str(connection)+"_"+"Link"+str(i)
                 self.listJointNames.append(jointName)
                 parentName = "Link"+str(connection)
                 childName = "Link"+str(i)
-                randomAxis = self.allLinks[connection]["randomAxis"]
-                direction = self.allLinks[connection]["direction"]
+                randomAxis = random.randint(0, 2)
+                direction = random.randint(0, 1)
                 if randomAxis == 0:
                     randomJointAxis = "0 1 0"
                     if direction == 0:
@@ -202,6 +202,8 @@ class SOLUTION:
                                 0, 0, -self.allLinks[i]["size"][randomAxis]/2], size=self.allLinks[i]["size"],
                                 colorString=self.allLinks[i]["cString"], colorName=self.allLinks[i]["cName"])
                             self.generatedLinks.add(childName)
+
+        self.generatedLinks = {self.link.rootLink}
 
         pyrosim.End()
 
