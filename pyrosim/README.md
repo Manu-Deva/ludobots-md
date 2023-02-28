@@ -6,6 +6,8 @@ The pyrosim graphical interface, pybullet physics engine, and other python libra
 Ludobots MOOC -  https://www.reddit.com/r/ludobots/
 Pyrosim - https://github.com/jbongard/pyrosim.git
 
+To run this code, click "Run" in the top right corner and import the code to your computer
+
 In this assignment, a "creature" with 3D morphology is generated with random size and connections in space, having 4-8 links in its body.
 The body's individual links are randomly connected to each other through dictionaries in a function inside a separate LINK class.
 This information is passed into the create_body function of SOLUTION, where a link's information is used to generate the entire body.
