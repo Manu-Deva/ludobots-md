@@ -6,6 +6,8 @@ The pyrosim graphical interface, pybullet physics engine, and other python libra
 Ludobots MOOC -  https://www.reddit.com/r/ludobots/
 Pyrosim - https://github.com/jbongard/pyrosim.git
 
+# Overview
+
 To run this code, click "Run" in the top right corner and import the code to your computer
 
 In this assignment, a "creature" with 3D morphology is generated with random size and connections in space, having 4-8 links in its body.
@@ -14,6 +16,8 @@ This information is passed into the create_body function of SOLUTION, where a li
 At initialization of each link in the LINK class, attributes including connections, size, color, joint axis, +/- direction of growth, and mass are recorded.
 
 ![Note Feb 21, 2023](https://user-images.githubusercontent.com/94333898/221752835-73d60c49-c3dc-4686-873c-5076998109a7.jpg)
+
+# Evolutionary Criteria
 
 A morphospace of this creature includes the ability to grow in the +x/y/z and -x/y/z directions, building out from previous links by using a random jointAxis and direction to track what direction it is growing in.
 
