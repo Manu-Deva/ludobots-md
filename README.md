@@ -1,4 +1,4 @@
-# Assignment 8 - Parallel Hill Climbing of 3D Creatures - CS396 Northwestern University
+# Parallel Hill Climbing of 3D Creatures - CS396 Northwestern University
 
 Youtube Link - https://youtu.be/BKG4CtIoVcM
 
